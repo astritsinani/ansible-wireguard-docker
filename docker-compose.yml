@@ -2,34 +2,52 @@ version: "3.8"
 
 services:
   router:
-    build:
-      context: .
-      dockerfile: Dockerfile.r9
-    container_name: wg-router
-    privileged: true
-    command: ["/sbin/init"]
+    image: linuxserver/wireguard
+    container_name: router
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - TZ=UTC
+      - SERVERURL=auto
+      - SERVERPORT=51820
+      - PEERS=2
+      - INTERNAL_SUBNET=10.0.0.0
+      - ALLOWEDIPS=0.0.0.0/0
+    volumes:
+      - ./config/router:/config
     networks:
       wg-net:
         ipv4_address: 172.28.0.10
 
   client1:
-    build:
-      context: .
-      dockerfile: Dockerfile.r9
-    container_name: wg-client1
-    privileged: true
-    command: ["/sbin/init"]
+    image: linuxserver/wireguard
+    container_name: client1
+    depends_on:
+      - router
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TZ=UTC
+      - PEERS=0
+    volumes:
+      - ./config/client1:/config
     networks:
       wg-net:
         ipv4_address: 172.28.0.11
 
   client2:
-    build:
-      context: .
-      dockerfile: Dockerfile.r9
-    container_name: wg-client2
-    privileged: true
-    command: ["/sbin/init"]
+    image: linuxserver/wireguard
+    container_name: client2
+    depends_on:
+      - router
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TZ=UTC
+      - PEERS=0
+    volumes:
+      - ./config/client2:/config
     networks:
       wg-net:
         ipv4_address: 172.28.0.12
