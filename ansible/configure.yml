@@ -1,0 +1,38 @@
+---
+- hosts: wg_router
+  become: yes
+  vars:
+    wg_interface: "{{ wg_interface }}"
+    wg_port: "{{ wg_port }}"
+    wg_network: "{{ wg_network }}"
+  tasks:
+    - name: Ensure /etc/wireguard exists
+      file:
+        path: /etc/wireguard
+        state: directory
+        mode: "0700"
+
+    - name: Create WireGuard config on router
+      template:
+        src: router_wg0.conf.j2
+        dest: /etc/wireguard/{{ wg_interface }}.conf
+        mode: "0600"
+
+- hosts: wg_peers
+  become: yes
+  vars:
+    wg_interface: "{{ wg_interface }}"
+    wg_port: "{{ wg_port }}"
+    wg_network: "{{ wg_network }}"
+  tasks:
+    - name: Ensure /etc/wireguard exists
+      file:
+        path: /etc/wireguard
+        state: directory
+        mode: "0700"
+
+    - name: Create WireGuard config on peer
+      template:
+        src: peer_wg0.conf.j2
+        dest: /etc/wireguard/{{ wg_interface }}.conf
+        mode: "0600"

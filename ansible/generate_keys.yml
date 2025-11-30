@@ -1,0 +1,19 @@
+---
+- hosts: wg_router:wg_peers
+  gather_facts: no
+  tasks:
+    - name: Generate WireGuard private key
+      command: wg genkey
+      register: private_key
+
+    - name: Set private key fact
+      set_fact:
+        wg_private_key: "{{ private_key.stdout }}"
+
+    - name: Generate WireGuard public key
+      command: /bin/sh -c "echo {{ wg_private_key }} | wg pubkey"
+      register: public_key
+
+    - name: Set public key fact
+      set_fact:
+        wg_public_key: "{{ public_key.stdout }}"

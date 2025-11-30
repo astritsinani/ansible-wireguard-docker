@@ -1,0 +1,12 @@
+[Interface]
+Address = {{ hostvars['router'].wg_ip }}/24
+ListenPort = {{ wg_port }}
+PrivateKey = {{ hostvars['router'].wg_private_key }}
+# Userspace WireGuard implementation
+UserspaceImplementation = wireguard-go
+
+{% for peer in ['client1', 'client2'] %}
+[Peer]
+PublicKey = {{ hostvars[peer].wg_public_key }}
+AllowedIPs = {{ hostvars[peer].wg_ip }}/32
+{% endfor %}

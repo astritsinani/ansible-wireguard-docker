@@ -1,0 +1,15 @@
+FROM rockylinux:9
+
+RUN dnf -y update && \
+    dnf -y install python3 python3-pip iproute iputils wireguard-tools golang && \
+    dnf clean all
+
+# Build and install wireguard-go (userspace implementation)
+RUN curl -L -o /tmp/wireguard-go.tar.xz \
+      https://github.com/WireGuard/wireguard-go/archive/refs/tags/v0.0.20230223.tar.gz && \
+    mkdir -p /tmp/wg && \
+    tar -xf /tmp/wireguard-go.tar.xz -C /tmp/wg --strip-components=1 && \
+    cd /tmp/wg && make && \
+    install -m 0755 wireguard-go /usr/local/bin/wireguard-go && \
+    rm -rf /tmp/wg /tmp/wireguard-go.tar.xz
+CMD ["/sbin/init"]

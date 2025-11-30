@@ -1,0 +1,10 @@
+[Interface]
+Address = {{ wg_ip }}/32
+PrivateKey = {{ wg_private_key }}
+UserspaceImplementation = wireguard-go
+
+[Peer]
+PublicKey = {{ hostvars['router'].wg_public_key }}
+Endpoint = {{ hostvars['router'].wg_ip }}:{{ wg_port }}
+AllowedIPs = {{ wg_network }}
+PersistentKeepalive = 25

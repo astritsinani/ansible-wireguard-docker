@@ -1,0 +1,10 @@
+---
+- hosts: wg_router:wg_peers
+  become: yes
+  tasks:
+    - name: Bring up WireGuard interface in userspace mode
+      environment:
+        WG_QUICK_USERSPACE_IMPLEMENTATION: wireguard-go
+      command: wg-quick up {{ wg_interface }}
+      register: wg_up
+      failed_when: wg_up.rc != 0 and ('already exists' not in (wg_up.stderr | default('')))
